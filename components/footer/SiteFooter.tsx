@@ -107,7 +107,7 @@ export default function SiteFooter() {
 
         <div className="footer-end reveal">
           <span>
-            © {year} {identity.name} — All rights reserved
+            CodeWithShivank
           </span>
           <a href="#top">
             Back to top{" "}

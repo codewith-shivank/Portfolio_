@@ -134,9 +134,9 @@ export default function PortfolioShell() {
             className="wordmark"
             href="#top"
             onClick={closeMenu}
-            aria-label="Shivannkk home"
+            aria-label="CodeWithShivank home"
           >
-            SHIVANNKK<span className="wordmark-dot">.</span>
+            CodeWithShivank
           </a>
           <button
             className="menu-toggle"

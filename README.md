@@ -1,4 +1,4 @@
-﻿# Shivannkk portfolio
+# CodeWithShivank portfolio
 
 An editorial developer portfolio built with Next.js, TypeScript, and CSS. The visual direction uses a warm paper / ink palette with a signal-green accent, an interactive pointer-reactive hero console, and an index-like project presentation.
 

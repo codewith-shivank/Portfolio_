@@ -1,6 +1,6 @@
 export const identity = {
-  name: "Shivank Maurya",
-  handle: "SHIVANNKK",
+  name: "Shivank",
+  handle: "CodeWithShivank",
   role: "Full-Stack MERN Developer",
   headline:
     "BCA '28 @ BBDU | Full-Stack MERN Developer | Java & DSA | Aspiring Software Engineer",
