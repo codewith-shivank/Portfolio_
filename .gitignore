@@ -4,3 +4,4 @@ out
 *.log
 .env*
 *.tsbuildinfo
+public/models/rui-character.glb
