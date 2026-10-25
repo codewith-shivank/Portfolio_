@@ -1,5 +1,4 @@
 import type { CSSProperties } from "react";
-import { useRevealOnScroll } from "../../hooks/useRevealOnScroll";
 
 type Service = {
   number: string;
@@ -41,15 +40,23 @@ const services: Service[] = [
 ];
 
 export default function ServicesSection() {
-  const { setContainerRef } = useRevealOnScroll<HTMLElement>();
-
   return (
-    <section
-      className="services section-pad"
-      id="services"
-      ref={setContainerRef}
-    >
+    <section className="services section-pad" id="services">
       <div className="page-grid">
+        <div className="section-heading services-heading reveal">
+          <div className="section-index">03 / Services</div>
+          <div>
+            <p className="eyebrow">Ways I can contribute</p>
+            <h2>
+              From idea to <em>interface.</em>
+            </h2>
+          </div>
+          <p className="heading-note">
+            Practical, end-to-end web development shaped around the people who
+            will use the product.
+          </p>
+        </div>
+
         <div className="services-list">
           {services.map((service, index) => (
             <article

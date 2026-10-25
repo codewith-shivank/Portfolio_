@@ -1,6 +1,5 @@
 "use client";
 
-import { useRevealOnScroll } from "../../hooks/useRevealOnScroll";
 import { identity, socials } from "../../lib/identity";
 
 const footerNav = [
@@ -11,12 +10,11 @@ const footerNav = [
 ];
 
 export default function SiteFooter() {
-  const { setContainerRef } = useRevealOnScroll<HTMLElement>();
   const activeSocials = socials.filter((social) => social.url.length > 0);
   const year = new Date().getFullYear();
 
   return (
-    <footer className="site-footer" id="footer" ref={setContainerRef}>
+    <footer className="site-footer" id="footer">
       <div className="page-grid">
         <div className="footer-cta reveal">
           <p className="eyebrow light">

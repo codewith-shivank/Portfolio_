@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
 import ServicesSection from "./services/ServicesSection";
 import SiteFooter from "./footer/SiteFooter";
 import { identity } from "../lib/identity";
-const RuiCharacter = dynamic(() => import("./hero/RuiCharacter"), {
-  ssr: false,
-});
+import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
+import Particle from "./hero/particle";
 
 type ProjectFilter = "all" | "web" | "interactive";
 
@@ -72,39 +70,24 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
 export default function PortfolioShell() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState<ProjectFilter>("all");
-  const [copied, setCopied] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<
+    "idle" | "copied" | "unavailable"
+  >("idle");
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
+  const { setContainerRef, reducedMotion } = useRevealOnScroll<HTMLElement>();
 
   useEffect(() => {
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updateMotion = () => setReducedMotion(motionQuery.matches);
-    updateMotion();
-    motionQuery.addEventListener("change", updateMotion);
+    if (!menuOpen) return;
 
-    const revealItems = Array.from(document.querySelectorAll(".reveal"));
-    if (reducedMotion || !("IntersectionObserver" in window)) {
-      revealItems.forEach((item) => item.classList.add("is-visible"));
-    } else {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.14 },
-      );
-      revealItems.forEach((item) => observer.observe(item));
-      return () => {
-        observer.disconnect();
-        motionQuery.removeEventListener("change", updateMotion);
-      };
-    }
-
-    return () => motionQuery.removeEventListener("change", updateMotion);
-  }, [reducedMotion]);
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuToggleRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [menuOpen]);
 
   const visibleProjects = projects.filter(
     (project) => filter === "all" || project.categories.includes(filter),
@@ -114,10 +97,10 @@ export default function PortfolioShell() {
     const email = identity.email;
     try {
       await navigator.clipboard.writeText(email);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
+      setCopyStatus("copied");
+      window.setTimeout(() => setCopyStatus("idle"), 1800);
     } catch {
-      window.location.href = `mailto:${email}`;
+      setCopyStatus("unavailable");
     }
   }
 
@@ -126,7 +109,7 @@ export default function PortfolioShell() {
   }
 
   return (
-    <main>
+    <main ref={setContainerRef}>
       <section className="hero" id="top">
         <div className="noise" aria-hidden="true" />
         <header className="site-header">
@@ -139,8 +122,10 @@ export default function PortfolioShell() {
             CodeWithShivank
           </a>
           <button
+            ref={menuToggleRef}
             className="menu-toggle"
             type="button"
+            aria-label={menuOpen ? "Close navigation" : "Open navigation"}
             aria-expanded={menuOpen}
             aria-controls="site-navigation"
             onClick={() => setMenuOpen((open) => !open)}
@@ -193,10 +178,9 @@ export default function PortfolioShell() {
             </div>
           </div>
 
-          <RuiCharacter
-            className="hero-character"
-            reducedMotion={reducedMotion}
-          />
+          <div className="hero-canvas-panel">
+            <Particle reducedMotion={reducedMotion} />
+          </div>
         </div>
 
         <nav className="hero-footer page-grid" aria-label="Explore portfolio">
@@ -295,7 +279,7 @@ export default function PortfolioShell() {
             ))}
           </div>
 
-          <div className="project-list" aria-live="polite">
+          <div className="project-list" aria-live="polite" aria-relevant="additions removals">
             {visibleProjects.map((project, index) => (
               <a
                 className={`project-row reveal ${project.accent}`}
@@ -337,7 +321,7 @@ export default function PortfolioShell() {
           <div className="contact-main">
             <p className="eyebrow light">Have something worth making?</p>
             <h2>
-              Let&apos;s make
+              Let&apos;s make{" "}
               <br />
               <em>the next bit.</em>
             </h2>
@@ -351,8 +335,17 @@ export default function PortfolioShell() {
             >
               Send an email <Arrow diagonal />
             </a>
-            <button type="button" className="copy-button" onClick={copyEmail}>
-              {copied ? "Copied to clipboard" : `${identity.email}  /  copy`}
+            <button
+              type="button"
+              className="copy-button"
+              onClick={copyEmail}
+              aria-live="polite"
+            >
+              {copyStatus === "copied"
+                ? "Copied to clipboard"
+                : copyStatus === "unavailable"
+                  ? "Clipboard unavailable — use the email link above"
+                  : `${identity.email}  /  copy`}
             </button>
           </div>
           <div className="contact-aside">

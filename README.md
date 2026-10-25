@@ -11,6 +11,18 @@ npm run dev
 
 Then open `http://localhost:3000`.
 
+## Checks before sharing
+
+Run `npm run lint` and `npm run build` before sending a preview. For a client
+or recruiter to open the site outside your computer, deploy the branch to a
+hosting provider such as Vercel and share its preview URL; the local development
+address is only accessible on your machine.
+
+Before publishing, replace the placeholder email in `lib/identity.ts` with a
+confirmed contact address and verify that each featured repository is public
+and its description still matches the project. No resume or employment history
+is included because those details were not provided.
+
 ## Personalize before launch
 
 The biography and technology list use the profile details supplied by Shivank. Featured projects link to public GitHub repositories; update the project data in `components/PortfolioShell.tsx` as the featured work changes. Experience details are omitted; education is limited to the supplied BCA-at-BBDU headline. Confirm the contact address in `lib/identity.ts` before publishing; `hello@shivank.dev` is a deliberate placeholder.
