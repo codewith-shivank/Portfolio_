@@ -104,6 +104,11 @@ export default function PortfolioShell() {
     }
   }
 
+  const contactEmailLinks = identity.contactEmails.map((contactEmail) => ({
+    ...contactEmail,
+    href: `mailto:${contactEmail.value}?subject=Hello%20Shivank`,
+  }));
+
   function closeMenu() {
     setMenuOpen(false);
   }
@@ -335,6 +340,17 @@ export default function PortfolioShell() {
             >
               Send an email <Arrow diagonal />
             </a>
+            <div className="contact-email-links">
+              {contactEmailLinks.map((contactEmail) => (
+                <a
+                  key={contactEmail.value}
+                  className="text-link light-link"
+                  href={contactEmail.href}
+                >
+                  {contactEmail.label}: {contactEmail.value}
+                </a>
+              ))}
+            </div>
             <button
               type="button"
               className="copy-button"

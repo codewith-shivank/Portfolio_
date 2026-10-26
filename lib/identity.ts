@@ -5,7 +5,12 @@ export const identity = {
   headline:
     "BCA '28 @ BBDU | Full-Stack MERN Developer | Java & DSA | Aspiring Software Engineer",
   education: "BCA '28 @ BBDU",
-  email: "hello@shivank.dev",
+  email: "codewithshivank@outlook.com",
+  secondaryEmail: "codewithshivank@gmail.com",
+  contactEmails: [
+    { label: "Outlook", value: "codewithshivank@outlook.com" },
+    { label: "Gmail", value: "codewithshivank@gmail.com" },
+  ],
 } as const;
 
 export const socials: { label: string; url: string }[] = [
