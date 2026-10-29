@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import ServicesSection from "./services/ServicesSection";
 import SiteFooter from "./footer/SiteFooter";
 import { identity } from "../lib/identity";
+import { projects as projectCatalog } from "../lib/projects";
 import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 import Particle from "./hero/particle";
 
@@ -85,16 +86,25 @@ export default function PortfolioShell() {
         menuToggleRef.current?.focus();
       }
     };
+    document.body.classList.add("menu-is-open");
     window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.classList.remove("menu-is-open");
+      window.removeEventListener("keydown", closeOnEscape);
+    };
   }, [menuOpen]);
 
-  const visibleProjects = projects.filter(
+  const visibleProjects = projectCatalog.filter(
     (project) => filter === "all" || project.categories.includes(filter),
   );
 
   async function copyEmail() {
     const email = identity.email;
+    if (!navigator.clipboard?.writeText) {
+      setCopyStatus("unavailable");
+      return;
+    }
+
     try {
       await navigator.clipboard.writeText(email);
       setCopyStatus("copied");
@@ -115,6 +125,9 @@ export default function PortfolioShell() {
 
   return (
     <main ref={setContainerRef}>
+      <a className="skip-link" href="#work">
+        Skip to selected work
+      </a>
       <section className="hero" id="top">
         <div className="noise" aria-hidden="true" />
         <header className="site-header">
@@ -284,15 +297,16 @@ export default function PortfolioShell() {
             ))}
           </div>
 
-          <div className="project-list" aria-live="polite" aria-relevant="additions removals">
+          <p className="sr-only" aria-live="polite">
+            Showing {visibleProjects.length} {filter === "all" ? "" : `${filter} `}project{visibleProjects.length === 1 ? "" : "s"}.
+          </p>
+          <div className="project-list">
             {visibleProjects.map((project, index) => (
               <a
                 className={`project-row reveal ${project.accent}`}
-                href={project.href}
+                href={`/work/${project.slug}`}
                 key={project.title}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${project.title} on GitHub`}
+                aria-label={`Read the ${project.title} case study`}
                 style={{ "--delay": `${index * 80}ms` } as React.CSSProperties}
               >
                 <span className="project-number">{project.number}</span>

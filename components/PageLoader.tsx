@@ -9,10 +9,13 @@ export default function PageLoader() {
 
   useEffect(() => {
     setMounted(true);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const loadDelay = reducedMotion ? 0 : 800;
+    const fadeDelay = reducedMotion ? 0 : 600;
     const timer = setTimeout(() => {
       setIsLoaded(true);
-      setTimeout(() => setShowLoader(false), 600);
-    }, 800);
+      setTimeout(() => setShowLoader(false), fadeDelay);
+    }, loadDelay);
 
     return () => clearTimeout(timer);
   }, []);

@@ -11,9 +11,9 @@ export default function ScrollProgress() {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = scrollTop / docHeight;
+      const scrollPercent = docHeight > 0 ? Math.min(1, scrollTop / docHeight) : 0;
       setProgress(scrollPercent);
-      setVisible(scrollPercent > 0.05 && scrollPercent < 0.95);
+      setVisible(docHeight > 0 && scrollPercent > 0.05 && scrollPercent < 0.95);
       if (barRef.current) {
         barRef.current.style.setProperty("--progress", String(scrollPercent));
       }
