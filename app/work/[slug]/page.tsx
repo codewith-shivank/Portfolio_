@@ -47,9 +47,18 @@ export default function ProjectCaseStudy({
           {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
         </div>
 
-        <a className="button button-dark" href={project.href} target="_blank" rel="noopener noreferrer">
-          View source on GitHub <span aria-hidden="true">↗</span>
-        </a>
+        <div className="case-study-actions">
+          {project.liveUrl ? (
+            <a className="button button-dark" href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+              View live demo <span aria-hidden="true">↗</span>
+            </a>
+          ) : (
+            <span className="case-study-unavailable">Live demo coming soon</span>
+          )}
+          <a className="text-link ink-link" href={project.href} target="_blank" rel="noopener noreferrer">
+            View source on GitHub <span aria-hidden="true">↗</span>
+          </a>
+        </div>
       </article>
     </main>
   );

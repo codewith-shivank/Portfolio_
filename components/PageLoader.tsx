@@ -12,12 +12,16 @@ export default function PageLoader() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const loadDelay = reducedMotion ? 0 : 800;
     const fadeDelay = reducedMotion ? 0 : 600;
-    const timer = setTimeout(() => {
+    let fadeTimer: number | undefined;
+    const timer = window.setTimeout(() => {
       setIsLoaded(true);
-      setTimeout(() => setShowLoader(false), fadeDelay);
+      fadeTimer = window.setTimeout(() => setShowLoader(false), fadeDelay);
     }, loadDelay);
 
-    return () => clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      if (fadeTimer !== undefined) window.clearTimeout(fadeTimer);
+    };
   }, []);
 
   if (!mounted || !showLoader) return null;

@@ -10,42 +10,6 @@ import Particle from "./hero/particle";
 
 type ProjectFilter = "all" | "web" | "interactive";
 
-const projects = [
-  {
-    number: "01",
-    title: "Gesture-driven particle experience",
-    description:
-      "Hand tracking drives a real-time 20,000-particle scene built with MediaPipe Hands, Three.js, and WebGL.",
-    tags: ["Three.js", "MediaPipe", "WebGL"],
-    categories: ["interactive"],
-    href: "https://github.com/codewith-shivank/AR-JJK-Cursed-Technique-",
-    accent: "peach",
-    glyph: "✳",
-  },
-  {
-    number: "02",
-    title: "Weather & air-quality dashboard",
-    description:
-      "Forecasts, hazard alerts, pollutant data, radar maps, and offline support in a responsive React app.",
-    tags: ["React", "TypeScript", "PWA"],
-    categories: ["web"],
-    href: "https://github.com/codewith-shivank/atmosphere-forecast",
-    accent: "blue",
-    glyph: "⌁",
-  },
-  {
-    number: "03",
-    title: "Interactive 3D automotive showroom",
-    description:
-      "A browser-based 3D showroom built with React, Three.js, and React Three Fiber.",
-    tags: ["React Three Fiber", "Three.js", "3D"],
-    categories: ["interactive"],
-    href: "https://github.com/codewith-shivank/Interactive-3D-Automotive-Showroom",
-    accent: "yellow",
-    glyph: "↗",
-  },
-];
-
 const skills = [
   "MERN",
   "React",
@@ -75,6 +39,7 @@ export default function PortfolioShell() {
     "idle" | "copied" | "unavailable"
   >("idle");
   const menuToggleRef = useRef<HTMLButtonElement>(null);
+  const navRef = useRef<HTMLElement>(null);
   const { setContainerRef, reducedMotion } = useRevealOnScroll<HTMLElement>();
 
   useEffect(() => {
@@ -85,12 +50,36 @@ export default function PortfolioShell() {
         setMenuOpen(false);
         menuToggleRef.current?.focus();
       }
+      if (event.key === "Tab" && navRef.current) {
+        const focusable = Array.from(
+          navRef.current.querySelectorAll<HTMLElement>("a, button"),
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
     };
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (!navRef.current?.contains(target) && !menuToggleRef.current?.contains(target)) {
+        setMenuOpen(false);
+      }
+    };
+
     document.body.classList.add("menu-is-open");
+    navRef.current?.querySelector<HTMLElement>("a")?.focus();
     window.addEventListener("keydown", closeOnEscape);
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
     return () => {
       document.body.classList.remove("menu-is-open");
       window.removeEventListener("keydown", closeOnEscape);
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
     };
   }, [menuOpen]);
 
@@ -155,6 +144,7 @@ export default function PortfolioShell() {
           </button>
           <nav
             id="site-navigation"
+            ref={navRef}
             className={`site-nav ${menuOpen ? "is-open" : ""}`}
             aria-label="Primary navigation"
           >
@@ -176,12 +166,12 @@ export default function PortfolioShell() {
         <div className="hero-content page-grid">
           <div className="hero-intro">
             <p className="eyebrow light">
-              {identity.headline}
+              Full-stack development and interactive web experiences
             </p>
             <h1>
               Shivank<span aria-hidden="true">.</span>
             </h1>
-            <p className="hero-manifesto">{identity.role}</p>
+            <p className="hero-manifesto">Building useful products for the web.</p>
             <p className="hero-description">
               Building full-stack web apps and interactive browser experiments,
               from weather tools to real-time 3D.
@@ -251,6 +241,10 @@ export default function PortfolioShell() {
             <a className="text-link ink-link" href="#services">
               How I can help <Arrow diagonal />
             </a>
+            <div className="learning-direction">
+              <p className="eyebrow">Currently learning</p>
+              <p>Java, data structures, WebGL, and the foundations of thoughtful software engineering.</p>
+            </div>
           </div>
           <div className="annotation-note">
             <span>↳</span>Less noise.
@@ -323,8 +317,8 @@ export default function PortfolioShell() {
                     <small key={tag}>{tag}</small>
                   ))}
                 </span>
-                <span className="project-arrow" aria-hidden="true">
-                  ↗
+                <span className="project-arrow">
+                  View case study <span aria-hidden="true">↗</span>
                 </span>
               </a>
             ))}

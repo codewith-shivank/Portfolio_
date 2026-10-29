@@ -11,6 +11,7 @@ export type Project = {
   tags: string[];
   categories: ProjectCategory[];
   href: string;
+  liveUrl?: string;
   accent: "peach" | "blue" | "yellow";
   glyph: string;
 };

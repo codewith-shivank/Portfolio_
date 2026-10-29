@@ -139,14 +139,15 @@ export default function Particle({
     const context = ctx;
 
     // Layout constants
-    const FONT_SIZE = 13;
-    const LINE_HEIGHT = 23;
+    const isSmallScreen = window.matchMedia("(max-width: 520px)").matches;
+    const FONT_SIZE = isSmallScreen ? 11 : 13;
+    const LINE_HEIGHT = isSmallScreen ? 19 : 23;
     const CHAR_WIDTH = 7.82;
     const GUTTER_WIDTH = 46;
     const CODE_START_X = GUTTER_WIDTH + 14;
     const PADDING_Y = 22;
-    const SNIPPET_CYCLE_MS = 4800;
-    const CURSOR_INFLUENCE = 110;
+    const SNIPPET_CYCLE_MS = isSmallScreen ? 6500 : 4800;
+    const CURSOR_INFLUENCE = isSmallScreen ? 80 : 110;
 
     let cells: GlyphCell[] = [];
     let snippetIndex = 0;
@@ -314,31 +315,31 @@ export default function Particle({
     eventTarget.addEventListener("pointermove", onPointerMove, { passive: true });
     eventTarget.addEventListener("pointerleave", onPointerLeave, { passive: true });
 
-    const viewportObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          isVisible.current = entry.isIntersecting;
-          if (entry.isIntersecting && !rafRef.current && !reducedMotion) {
-            rafRef.current = requestAnimationFrame((ts) => {
-              lastTs = ts;
-              draw(ts);
-            });
-          } else if (!entry.isIntersecting && rafRef.current) {
-            cancelAnimationFrame(rafRef.current);
-            rafRef.current = 0;
-          }
-        });
-      }
-    );
+    const startAnimation = () => {
+      if (reducedMotion || !isVisible.current || rafRef.current) return;
+      rafRef.current = requestAnimationFrame((ts) => {
+        lastTs = ts;
+        draw(ts);
+      });
+    };
+
+    const viewportObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        isVisible.current = entry.isIntersecting;
+        if (entry.isIntersecting) {
+          startAnimation();
+        } else if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = 0;
+        }
+      });
+    });
     viewportObserver.observe(canvasRef.current);
 
     if (reducedMotion) {
       drawStatic();
     } else {
-      rafRef.current = requestAnimationFrame((ts) => {
-        lastTs = ts;
-        rafRef.current = requestAnimationFrame(draw);
-      });
+      startAnimation();
     }
 
     return () => {
